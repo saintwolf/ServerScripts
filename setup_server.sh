@@ -90,6 +90,12 @@ function setup_lamp_server
 	/etc/init.d/mysql restart
 }
 
+if [ "$(whoami)" != "root" ]
+then
+	echo "Bugger: You must be root to run this!"
+	exit 1
+fi
+
 # Main
 echo ""
 

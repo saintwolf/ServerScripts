@@ -88,6 +88,9 @@ function setup_lamp_server
 	# Disable InnoDB
 	sed -i 's/\[mysqld\]/&\nskip-innodb\ndefault-storage-engine = myisam/g' /etc/mysql/my.cnf
 	/etc/init.d/mysql restart
+	
+	# Secure the MySQL Server
+	mysql_secure_installation
 }
 
 if [ "$(whoami)" != "root" ]

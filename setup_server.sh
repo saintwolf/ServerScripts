@@ -83,7 +83,7 @@ function setup_lamp_server
 
 	# Do Apache stuff
 	mkdir /var/virtualsites
-	chown www-data:www-data /var/virtualsites
+	chown -R www-data:www-data /var/virtualsites
 
 	# Disable InnoDB
 	sed -i 's/\[mysqld\]/&\nskip-innodb\ndefault-storage-engine = myisam/g' /etc/mysql/my.cnf

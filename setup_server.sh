@@ -55,6 +55,10 @@ function setup_security_apps
 	sed -i '/\[apache\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
 	sed -i '/\[apache-noscript\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
 	sed -i '/\[apache-overflows\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
+
+	echo -e "\n\n\n[apache-phpmyadmin]\nenabled  = true\nport     = http,https\nfilter   = apache-phpmyadmin\nlogpath  = /var/log/apache*/*error.log\nmaxretry = 3" >> /etc/fail2ban/jail.local
+	echo -e "\n\n\n[apache-postflood]\n\nenabled = true\nfilter = apache-postflood\nlogpath = /var/log/httpd/access_log\nfindtime = 10\nmaxretry = 10" >> /etc/fail2ban/jail.local
+	cp conf/fail2ban/filter.d/* /etc/fail2ban/filter.d/
 	
 	# Install and set up RKHunter
 	apt-get install -y rkhunter

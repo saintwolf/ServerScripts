@@ -96,6 +96,11 @@ function setup_lamp_server
 	
 	# Secure the MySQL Server
 	mysql_secure_installation
+	
+	# Install Composer
+	curl -sS https://getcomposer.org/installer | php
+	mv composer.phar /usr/local/bin/composer
+	chmod +x /usr/local/bin/composer
 }
 
 if [ "$(whoami)" != "root" ]

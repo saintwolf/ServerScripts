@@ -84,7 +84,7 @@ function setup_security_apps
 function setup_lamp_server
 {
 	# Sets up Apache2, MySQL and PHP
-	apt-get install -y apache2 php5-mysql mysql-server php5 libapache2-mod-php5 php5-intl php5-curl npm
+	apt-get install -y apache2 php-mysql mysql-server php libapache2-mod-php php-intl php-curl npm
 
 	# Do Apache stuff
 	mkdir /var/virtualsites

@@ -118,7 +118,7 @@ do
 	echo "----------------------------------"
 	echo "---Welcome to the setup script!---"
 	echo "-----------By Saintwolf-----------"
-	echo "--------DEBIAN 7/8 ONLY!!!--------"
+	echo "-------UBUNTU Xenial ONLY!!-------"
 	echo "----------------------------------"
 	echo "Please selection an option:"
 	echo ""

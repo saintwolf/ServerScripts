@@ -46,9 +46,10 @@ function setup_security_apps
 	# Update System
 	apt-get update
 	apt-get upgrade -y
+	
+	# Install applications
+	apt install -y fail2ban rkhunter logwatch
 
-	# Install and setup fail2ban
-	apt-get install -y fail2ban
 	# Configure fail2ban
 	cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 	sed -i '/\[ssh-ddos\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
@@ -61,16 +62,12 @@ function setup_security_apps
 	echo -e "\n\n\n[apache-phpmyadmin]\nenabled  = true\nport     = http,https\nfilter   = apache-phpmyadmin\nlogpath  = /var/log/apache*/*error.log\nmaxretry = 3" >> /etc/fail2ban/jail.local
 	echo -e "\n\n\n[apache-postflood]\n\nenabled = true\nfilter = apache-postflood\nlogpath = /var/log/httpd/access_log\nfindtime = 10\nmaxretry = 10" >> /etc/fail2ban/jail.local
 	
-	# Install and set up RKHunter
-	apt-get install -y rkhunter
 	# Configure RKHunter
 	sed -i "s,^SCRIPTWHITELIST=/usr/bin/lwp-request$,#&,g" /etc/rkhunter.conf # Fix bug in config file
 	# Cron Jobs
 	echo "0 0 * * * rkhunter --update" | tee -a /var/spool/cron/crontabs/root
 	echo "1 0 * * * rkhunter -c --cronjob 2>&1 | mail -s \"RKHunter Scan Details - $HOSTNAME\" $EMAIL" | tee -a /var/spool/cron/crontabs/root
 	
-	# Install and setup logwatch
-	apt-get install -y logwatch
 	# Configure Logwatch
 	sed -i "s/^Output.*$/Output = mail/g" /usr/share/logwatch/default.conf/logwatch.conf
 	sed -i "s/^Format.*$/Format = html/g" /usr/share/logwatch/default.conf/logwatch.conf

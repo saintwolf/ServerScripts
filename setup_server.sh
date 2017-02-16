@@ -33,7 +33,7 @@ function setup_user
 	# Add user to sudoers file, user will not have to confirm their password for root access
 	# consider setting up a SSH key
 	echo "$USERNAME ALL=(ALL:ALL) NOPASSWD:ALL" | (EDITOR="tee -a" visudo)
-	
+
 	echo "WARNING: USER WILL NOT HAVE TO CONFIRM PASSWORD FOR SUDO ROOT ACCESS"
 	echo "IT IS HIGHLY RECOMMENDED THAT YOU DISABLE PASSWORD AUTHENTICATION VIA SSH"
 	echo "AND USE PUBLIC KEYS INSTEAD!!!!"
@@ -46,28 +46,24 @@ function setup_security_apps
 	# Update System
 	apt-get update
 	apt-get upgrade -y
-	
+
 	# Install applications
 	apt install -y fail2ban rkhunter logwatch
 
 	# Configure fail2ban
-	cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-	sed -i '/\[ssh-ddos\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
-	sed -i '/\[apache\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
-	sed -i '/\[apache-noscript\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
-	sed -i '/\[apache-overflows\]/,/enabled =.*/{s/enabled.*/enabled = true/g}' /etc/fail2ban/jail.local
-
+	wget -P /etc/fail2ban https://raw.githubusercontent.com/saintwolf/ServerScripts/master/conf/fail2ban/jail.local
 	wget -P /etc/fail2ban/filter.d https://raw.githubusercontent.com/saintwolf/ServerScripts/master/conf/fail2ban/filter.d/apache-phpmyadmin.conf
 	wget -P /etc/fail2ban/filter.d https://raw.githubusercontent.com/saintwolf/ServerScripts/master/conf/fail2ban/filter.d/apache-postflood.conf
-	echo -e "\n\n\n[apache-phpmyadmin]\nenabled  = true\nport     = http,https\nfilter   = apache-phpmyadmin\nlogpath  = /var/log/apache*/*error.log\nmaxretry = 3" >> /etc/fail2ban/jail.local
-	echo -e "\n\n\n[apache-postflood]\n\nenabled = true\nfilter = apache-postflood\nlogpath = /var/log/httpd/access_log\nfindtime = 10\nmaxretry = 10" >> /etc/fail2ban/jail.local
-	
+	wget -P /etc/fail2ban/filter.d https://raw.githubusercontent.com/saintwolf/ServerScripts/master/conf/fail2ban/filter.d/phpmyadmin.conf
+
+	service fail2ban restart
+
 	# Configure RKHunter
 	sed -i "s,^SCRIPTWHITELIST=/usr/bin/lwp-request$,#&,g" /etc/rkhunter.conf # Fix bug in config file
 	# Cron Jobs
 	echo "0 0 * * * rkhunter --update" | tee -a /var/spool/cron/crontabs/root
 	echo "1 0 * * * rkhunter -c --cronjob 2>&1 | mail -s \"RKHunter Scan Details - $HOSTNAME\" $EMAIL" | tee -a /var/spool/cron/crontabs/root
-	
+
 	# Configure Logwatch
 	sed -i "s/^Output.*$/Output = mail/g" /usr/share/logwatch/default.conf/logwatch.conf
 	sed -i "s/^Format.*$/Format = html/g" /usr/share/logwatch/default.conf/logwatch.conf
@@ -90,10 +86,10 @@ function setup_lamp_server
 	# Disable InnoDB
 	sed -i 's/\[mysqld\]/&\nskip-innodb\ndefault-storage-engine = myisam/g' /etc/mysql/my.cnf
 	/etc/init.d/mysql restart
-	
+
 	# Secure the MySQL Server
 	mysql_secure_installation
-	
+
 	# Install Composer
 	curl -sS https://getcomposer.org/installer | php
 	mv composer.phar /usr/local/bin/composer
